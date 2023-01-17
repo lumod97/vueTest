@@ -1,19 +1,25 @@
+
 <script setup>
+
 import TestComponents from './components/TestComponents.vue'
+
+
 </script>
 
 <template>
-  <div id="app">
-    <header>
-      <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
-      <div class="wrapper">
-        <TestComponents msg="You did it!" />
-      </div>
+  <div id="app">
+    <head><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></head>
+    <header>
+     
+
+      
+        <TestComponents/>
+
     </header>
 
     <main>
-      <TestComponents />
+      
     </main>
   </div>
 </template>
