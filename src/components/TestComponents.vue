@@ -5,40 +5,46 @@
         <h3>Cliente</h3>
       </b-col>
       <b-col>
-        <b-button @click="openModal('Nuevo Cliente')" variant="primary">AddClient</b-button>
+        <b-button @click="openModal('Agregar')" variant="primary">AddClient</b-button>
       </b-col>
     </b-row>
-
-    <b-table :items="clients" :fields="tableHeaders">
+    <b-table :items="readClients" :fields="tableHeaders">
       <template #cell(name)="data">
-        {{ data.item.fname + " " + data.item.lname }}
+        {{ data.item.fullname }}
       </template>
       <template #cell(totalPayments)="data">
-        {{ data.item.payments.length }}
+        {{ data.item.totalTransactions }}
       </template>
       <template #cell(totalAmountPayments)="data">
         {{ data.item.totalAmount }}
       </template>
       <template #cell(actions)="data">
-        {{data.item.id}}
+        
         <b-button-group>
-            <b-button variant="warning" @click="openModal('Modificar Cliente',data.item.id)" >Modificar</b-button>
+            <b-button variant="warning" @click="openModal('Modificar',data.item.id)">Modificar</b-button>
+            
             <b-button @click="deleteClient(data.item.id)" variant="danger">Eliminar</b-button>
         </b-button-group>
       </template>
     </b-table>
-    <ModalClient :modalClients="clients.find(x => x.id == idClientSearch)" :titleModal="titleModal"/>
+    
+    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" @hidden="sModal = false" />
   </div>
 </template>
 <script>
+import axios from "axios";
 import ModalClient from "./ModalClient.vue";
 export default {
   components: {
     ModalClient,
   },
+  props: {
+    
+  },
   data() {
     return {
       titleModal: '',
+      sModal: false,
       tableHeaders: [
         {
           key: "name",
@@ -75,69 +81,45 @@ export default {
       ],
       clients: [
         {
-          id: "0001",
-          fname: "Luiggi",
-          lname: "Moretti",
-          dob: "08-07-1997",
-          phone: "946027276",
-          email: "luiggigmd.97@gmail.com",
-          address: "Av. Manuel Gonzales Prada 1201",
+          id: "",
+          fname: "",
+          lname: "",
+          dob: "",
+          phone: "",
+          email: "",
+          address: "",
           payments: [
             {
-              idPay: "pay-001",
-              transactionID: "005-8647",
-              amount: 250.0,
-              date: "12-01-2023",
-            },
-            {
-              idPay: "pay-002",
-              transactionID: "005-8648",
-              amount: 320.0,
-              date: "12-01-2023",
-            },
-          ],
-          totalAmount: 0
-        },
-        {
-          id:"0002",
-          fname: "Yaritza",
-          lname: "Aguayo",
-          dob: "25-10-1999",
-          phone: "921019751",
-          email: "yaritza@gmail.com",
-          address: "Psj. Circunvalacion 117",
-          payments: [
-            {
-              idPay: "pay-003",
-              transactionID: "7489",
-              amount: 320.0,
-              date: "17-01-2023"
-            },
-            {
-              idPay: "pay-004",
-              transactionID: "7489",
-              amount: 320.0,
-              date: "17-01-2023"
-            },
-            {
-              idPay: "pay-005",
-              transactionID: "7489",
-              amount: 320.0,
-              date: "17-01-2023"
+              idPay: "",
+              transactionID: "",
+              amount: "",
+              date: "",
             }
-          ],
-          totalAmount:0
+          ]
         }
       ],
-      items: [],
-      idClientSearch: ""
+      readClients: [],
+      idClientSearch: "",
     };
   },
   
   mounted() {
-    this.setTotalAmount();
+    this.getClients();
+    //this.setTotalAmount();
   },
   methods: {
+    async getClients(){
+      let url = "http://localhost:8000/api/search";
+      const response = await axios.get(url);
+      this.readClients=response.data
+      
+    },
+    async addClients(){
+      let url = "http://localhost:8000/api/add";
+      const response = await axios.post(url,this.clients);
+      console.log(this.clients)
+    },
+    
     setTotalAmount() {
       this.clients.map((el) => {
         el.payments.map((pay) => {
@@ -146,11 +128,15 @@ export default {
       });
       this.items = this.clients;
     },
-    openModal(actionModal, idClient) {
-      this.idClientSearch=idClient
+    openModal(actionModal, idClientSearch) {
+      this.sModal=true
+      if(actionModal=="Agregar"){
+        this.idClientSearch = ""
+      }else if(actionModal=="Modificar"){
+        this.idClientSearch=String(idClientSearch)
+      }
       this.titleModal=actionModal
-      this.$bvModal.show("modalClient");
     },
   },
 };
-</script>fname
+</script>

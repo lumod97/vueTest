@@ -1,6 +1,6 @@
 <template>
-  <b-modal id="modalClient">
-    <template #modal-header> <h3>{{titleModal}}</h3> </template>
+  <b-modal id="modalClient" ref="modal-client" @hidden="$emit('hidden')">
+    <template #modal-header> <h3>{{idClientSearch}} Cliente</h3> </template>
     <template #modal-footer>
       
       <b-button @click="addClients()" variant="outline-primary">Guardar</b-button>
@@ -19,7 +19,7 @@
           <input
             type="text"
             id="fname"
-            v-model="modalClients.fname"
+            v-model="clients.fname"
             class="form-control"
             placeholder=""
             aria-describedby="helpId"
@@ -30,7 +30,7 @@
           <input
             type="text"
             id="lname"
-            v-model="modalClients.lname"
+            v-model="clients.lname"
             class="form-control"
             placeholder=""
             aria-describedby="helptotalPaymentsId"
@@ -41,25 +41,25 @@
       <div class="row mb-2">
         <div class="col">
           <small class="text-muted">Date of Birthday</small>
-          <input type="date" v-model="modalClients.dob" id="dob" class="form-control" />
+          <input type="date" v-model="clients.dob" id="dob" class="form-control" />
         </div>
         <div class="col">
           <small class="text-muted">Phone</small>
-          <input type="text" v-model="modalClients.phone" id="phone" class="form-control" />
+          <input type="text" v-model="clients.phone" id="phone" class="form-control" />
         </div>
       </div>
 
       <div class="row mb-2">
         <div class="col">
           <small class="text-muted">Email</small>
-          <input type="email" v-model="modalClients.email" id="email" class="form-control" />
+          <input type="email" v-model="clients.email" id="email" class="form-control" />
         </div>
       </div>
 
       <div class="row mb-2">
         <div class="col">
           <small class="text-muted">Address</small>
-          <input type="text" v-model="modalClients.address" id="address" class="form-control" />
+          <input type="text" v-model="clients.address" id="address" class="form-control" />
         </div>
       </div>
 
@@ -107,52 +107,78 @@
   </b-modal>
 </template>
 <script>
+import axios from "axios";
 export default {
   data() {
     return {
-      
-    };
-  },
-  mounted() {},
-  props:{
-    modalClients: [
-      fname
-    ],
-    clientInputs:[],
-    titleModal: String,
-    idClientSearch:""
-  },
-  methods: {
-    addTransactions(){
-      console.log(this.modalClients.find(x => x.id == this.idClientSearch).payments.push(
+      clients: [
         {
-          idPay: "pay-008",
-          transactionID: "7489",
-          amount: 400.00,
-          date: "17-01-2023"
-        }))
-    },
-    addClients() {
-      //this.clients.splice(0)
-      this.modalClients.push({
-          fname: "Yaritza",
-          lname: "Aguayo",
-          dob: "25-10-1999",
-          phone: "921019751",
-          email: "yaritza@gmail.com",
-          address: "Psj. Circunvalacion 117",
+          id: "",
+          fname: "",
+          lname: "",
+          dob: "",
+          phone: "",
+          email: "",
+          address: "",
           payments: [
             {
-              idPay: "002",
-              transactionID: "7489",
-              amount: 400.00,
-              date: "17-01-2023"
+              idPay: "",
+              transactionID: "",
+              amount: "",
+              date: "",
             }
           ]
-      });
+        }
+      ],
+    };
+  },
+  mounted() {
+    this.$refs['modal-client'].show();
+    this.getClientByID();
+  },
+  props:{
+    clientInputs:[],
+    titleModal: String,
+    idClientSearch: String,
+  },
+  methods: {
+    async getClientByID(){
+      let url = "http://127.0.0.1:8000/api/sort";
+      const response = await axios.post(url, { idClient: this.idClientSearch });
+      let data = response.data
+      this.clients.splice(0)
+      this.clients = data[0]      
+    },
+    addTransactions(){
+      // this.clients.find(x => x.id == this.idClientSearch).payments.push(
+        console.log(this.clients.payments)
+        // this.clients.payments.push(
+        // {
+        //   idPay: "pay-008",
+        //   transactionID: "7489",
+        //   amount: 400.00,
+        //   date: "17-01-2023"
+        // })
+        // console.log(this.clients)
+    },
+    addClients() {
+      this.getClientByID()
+      // //this.clients.splice(0)
+      // this.clients.push({
+      //     fname: "Yaritza",
+      //     lname: "Aguayo",
+      //     dob: "25-10-1999",
+      //     phone: "921019751",
+      //     email: "yaritza@gmail.com",
+      //     address: "Psj. Circunvalacion 117",
+      //     payments: [
+            
+      //     ]
+      // });
     },
     closeModal() {
-      this.$bvModal.hide("modalClient");
+      console.log(this.$bvModal)
+      
     },
   },
 };
