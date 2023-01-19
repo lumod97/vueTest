@@ -244,7 +244,7 @@ export default {
       // });
     },
     async deleteTransaction(idTransaction){
-      if(confirm("Estas seguro que deseas eliminar el pago?")){
+      if(confirm("Estas seguro que dlaptopAMGeseas eliminar el pago?")){
         let url =  "http://127.0.0.1:8000/api/deleteTransaction";
         const response = await axios.post(url,{idTransaction:idTransaction});
       }

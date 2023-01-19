@@ -20,7 +20,7 @@
         {{ data.item.totalAmount }}
       </template>
       <template #cell(actions)="data">
-        {{data.item.id}}
+        
         <b-button-group>
             <b-button variant="warning" @click="openModal('Modificar',data.item.id)">Modificar</b-button>
             
@@ -28,7 +28,8 @@
         </b-button-group>
       </template>
     </b-table>
-    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" :isUpdate="isUpdate" @hidden="sModal = false, isUpdate = false" />
+    
+    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" @hidden="sModal = false" />
   </div>
 </template>
 <script>
@@ -118,6 +119,7 @@ export default {
     async addClients(){
       let url = "http://localhost:8000/api/add";
       const response = await axios.post(url,this.clients);
+      console.log(this.clients)
     },
     
     setTotalAmount() {
