@@ -9,6 +9,7 @@
       </b-col>
     </b-row>
     <b-table :items="readClients" :fields="tableHeaders">
+        
       <template #cell(name)="data">
         {{ data.item.fullname }}
       </template>
@@ -19,7 +20,7 @@
         {{ data.item.totalAmount }}
       </template>
       <template #cell(actions)="data">
-        
+        {{data.item.id}}
         <b-button-group>
             <b-button variant="warning" @click="openModal('Modificar',data.item.id)">Modificar</b-button>
             
@@ -27,8 +28,7 @@
         </b-button-group>
       </template>
     </b-table>
-    
-    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" @hidden="sModal = false" />
+    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" :isUpdate="isUpdate" @hidden="sModal = false, isUpdate = false" />
   </div>
 </template>
 <script>
@@ -45,6 +45,7 @@ export default {
     return {
       titleModal: '',
       sModal: false,
+      isUpdate: false,
       tableHeaders: [
         {
           key: "name",
@@ -117,7 +118,6 @@ export default {
     async addClients(){
       let url = "http://localhost:8000/api/add";
       const response = await axios.post(url,this.clients);
-      console.log(this.clients)
     },
     
     setTotalAmount() {
@@ -128,12 +128,15 @@ export default {
       });
       this.items = this.clients;
     },
+    
     openModal(actionModal, idClientSearch) {
       this.sModal=true
       if(actionModal=="Agregar"){
         this.idClientSearch = ""
       }else if(actionModal=="Modificar"){
+        this.isUpdate=true
         this.idClientSearch=String(idClientSearch)
+        console.log(this.idClientSearch)
       }
       this.titleModal=actionModal
     },
