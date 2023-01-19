@@ -8,12 +8,11 @@ import TestComponents from './components/TestComponents.vue'
       <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
 
       <div class="wrapper">
-        <TestComponents msg="You did it!" />
+        <TestComponents/>
       </div>
     </header>
 
     <main>
-      <TestComponents />
     </main>
   </div>
 </template>
