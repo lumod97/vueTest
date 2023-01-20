@@ -29,7 +29,7 @@
       </template>
     </b-table>
     
-    <ModalClient v-if="sModal" :titleModal="titleModal" :idClientSearch="idClientSearch" @hidden="sModal = false" />
+    <ModalClient v-if="sModal" :titleModal="titleModal" :isUpdate="isUpdate" :idClientSearch="idClientSearch" @hidden="sModal = false, isUpdate=false, getClients()" />
   </div>
 </template>
 <script>
@@ -119,9 +119,17 @@ export default {
     async addClients(){
       let url = "http://localhost:8000/api/add";
       const response = await axios.post(url,this.clients);
+      this.getClients()
       console.log(this.clients)
     },
-    
+    async deleteClient(idClientDelete){
+      if(confirm("Est[as seguro que deseas eliminar el cliente")){
+      let url = "http://localhost:8000/api/delete";
+      const response = await axios.post(url, {idClientDelete})
+      this.getClients()
+      console.log(response)
+      }
+    },
     setTotalAmount() {
       this.clients.map((el) => {
         el.payments.map((pay) => {
@@ -130,7 +138,6 @@ export default {
       });
       this.items = this.clients;
     },
-    
     openModal(actionModal, idClientSearch) {
       this.sModal=true
       if(actionModal=="Agregar"){
@@ -138,7 +145,6 @@ export default {
       }else if(actionModal=="Modificar"){
         this.isUpdate=true
         this.idClientSearch=String(idClientSearch)
-        console.log(this.idClientSearch)
       }
       this.titleModal=actionModal
     },

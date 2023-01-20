@@ -65,13 +65,11 @@
       </div>
       <div class="container" id="transactionsAdd">
         <h3>Payments</h3>
-
-
-        <b-button v-if="btnAddTransaction" @click="addTransactions()">Add Transaction</b-button>
+        <b-button v-if="btnAddTransaction" @click="addFieldsTransactions()">Add Transaction</b-button>
 
         <b-table v-if="client.payments" :items="client.payments" :fields="tableHeaders">
-          <template #cell(transaction_id)="data">
-            <b-form-input v-model="data.item.transaction_id" ></b-form-input>
+          <template #cell(transactionID)="data">
+            <b-form-input v-model="data.item.transactionID" ></b-form-input>
           </template>
           <template #cell(amount)="data">
             <b-form-input v-model="data.item.amount" ></b-form-input>
@@ -80,47 +78,14 @@
             <b-form-input type="date" v-model="data.item.date" ></b-form-input>
           </template>
           <template #cell(actions)="data">
+            {{data.item.id}}
             <b-button variant="danger" @click="deleteTransaction(data.item.id)"> <b-icon-trash></b-icon-trash> </b-button>
           </template>
         </b-table>
-        
-        
       </div>
       <div class="container">
-        
-        <!-- <div class="row" v-for="p, index in totalPayments" :key="index">
-                                <div class="col clearField">
-                                    <small>TransactionID</small>
-                                    
-                                    <input type="text" v-model="p.transactionId" id="" class="form-control">
-                                </div>
-
-                                <div class="col">
-                                    <small>Amount</small>
-                                    <input type="text" v-model="p.amount" id="" class="form-control clearField">
-                                </div>
-                                <div class="col">
-                                    <small>Date</small>
-                                    <input type="date" v-model="p.date" id="" class="form-control clearField">
-                                </div>
-                        </div> -->
       </div>
     </div>
-
-    <!-- <button
-                        type="button"
-                        ref="closeModal"
-                        class="btn btn-secondary"
-                        data-bs-dismiss="modal"
-                      >
-                        Close
-                      </button>
-                      <button name="btnSave" @click="checkForm()" v-if="modalAction" class="btn btn-primary">
-                        Save
-                      </button>
-                      <button v-else @click="updateClient()" data-bs-dismiss="modal" class="btn btn-primary">
-                        Update
-                      </button> -->
   </b-modal>
 </template>
 <script>
@@ -130,7 +95,7 @@ export default {
     return {
       tableHeaders: [
         {
-          key: "transaction_id",
+          key: "transactionID",
           label: "Transaction ID",
         },
         {
@@ -155,11 +120,9 @@ export default {
           phone: "",
           email: "",
           address: "",
-          payments: [
-            {}
-          ]
+          payments:[]
         }
-      ,
+      ,lastIDClient: "",
       // clientAdd:[
       //   {
       //     id: "",
@@ -178,7 +141,10 @@ export default {
     this.$refs['modal-client'].show();
     if(this.isUpdate){
       this.getClientByID()
+    }else{
+      this.addFieldsTransactions()
     }
+    
   },
   props:{
     isUpdate: {
@@ -193,64 +159,78 @@ export default {
       let url = "http://127.0.0.1:8000/api/sort";
       const response = await axios.post(url, { idClient: this.idClientSearch });
       let data = response.data
-      //this.client = data[0]
+      this.client = data[0]
           this.client.fname = data[0].fname
           this.client.lname = data[0].lname
           this.client.dob = data[0].dob
           this.client.phone = data[0].phone
           this.client.email = data[0].email
           this.client.address = data[0].address
-          if(this.client.payments.length<1){
-            this.client.payments ={
-            id:"",
-            transaction_id: "",
+          if(this.client.payments==null){
+            this.client.payments =[{
+            transactionID: "",
             amount: "",
             date: ""
-          }
+          }]
           }else{
             this.client.payments = JSON.parse(data[0].payments)
           }
-          
-
-      console.log(this.client)
     },
-    addTransactions(){      
+    addFieldsTransactions(){      
         this.client.payments.push({
-          id:this.client.payments+1,
-          transaction_id: "",
+          id:"",
+          client_id: "",
+          transactionID: "",
           amount: "",
           date: ""
         })
         this.client.payments.length<5 ? this.btnAddTransaction=true : this.btnAddTransaction=false
+        
+    },
+    async addTransactions(){
+        // console.log(this.client.payments)
+      let url = "http://localhost:8000/api/addTransactions"
+      const response = await axios.post(url,this.client.payments)
+      console.log(response)
+      
     },
     async addClients() {
-
       if(this.isUpdate){
+        
       }else{
-        let url = "http://localhost:8000/api/add";
-        const response = await axios.post(url,this.client)
-      }
-      //this.client.splice(0)
-      // this.client.push({
-      //     fname: "Yaritza",
-      //     lname: "Aguayo",
-      //     dob: "25-10-1999",
-      //     phone: "921019751",
-      //     email: "yaritza@gmail.com",
-      //     address: "Psj. Circunvalacion 117",
-      //     payments: [
+        if(this.client.payments[0].transactionID !== ""){
+          let url = "http://localhost:8000/api/add";
+          const response = await axios.post(url,this.client)
+          let lastIDClient = response.data[0].lastIDClient
+
+          this.client.payments.forEach((element, index) => {
+            this.client.payments[index].client_id = lastIDClient
+            this.addTransactions();
+            this.$refs['modal-client'].hide()
+          });
+          
+          // this.$refs['modal-client'].hide()
+          // this.addTransactions()
+        }
+        else{
+          if(confirm("Seguro que quiere agregar un cliente sin pagos?")){
+            let url = "http://localhost:8000/api/add";
+            const response = await axios.post(url,this.client)
             
-      //     ]
-      // });
+          }
+        }
+      }
     },
     async deleteTransaction(idTransaction){
-      if(confirm("Estas seguro que dlaptopAMGeseas eliminar el pago?")){
+      
+      if(confirm("Estas seguro que deseas eliminar el pago?")){
         let url =  "http://127.0.0.1:8000/api/deleteTransaction";
         const response = await axios.post(url,{idTransaction:idTransaction});
+        this.getClientByID()
       }
     },
     closeModal() {
-      console.log(this.$bvModal)
+      
       
     },
   },
