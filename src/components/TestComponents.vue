@@ -1,14 +1,14 @@
 <template>
   <div>
     <b-row>
-      <b-col>
+      <b-col sm="10">
         <h3>Cliente</h3>
       </b-col>
       <b-col>
         <b-button @click="openModal('Agregar')" variant="primary">AddClient</b-button>
       </b-col>
     </b-row>
-    <b-table :items="readClients" :fields="tableHeaders">
+    <b-table striped hover :items="readClients" :fields="tableHeaders">
         
       <template #cell(name)="data">
         {{ data.item.fullname }}
@@ -51,34 +51,50 @@ export default {
         {
           key: "name",
           label: "Nombre",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "dob",
           label: "Fecha de Nacimiento",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "phone",
           label: "Telefono",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "email",
           label: "Email",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "address",
           label: "Direccion",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "totalPayments",
           label: "Total de Transacciones",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "totalAmountPayments",
           label: "Monto Total",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
         {
           key: "actions",
           label: "Acciones",
+          thStyle: "width:auto",
+          thClass: "text-nowrap"
         },
       ],
       clients: [
@@ -120,14 +136,14 @@ export default {
       let url = "http://localhost:8000/api/add";
       const response = await axios.post(url,this.clients);
       this.getClients()
-      console.log(this.clients)
+      // console.log(this.clients)
     },
     async deleteClient(idClientDelete){
       if(confirm("Est[as seguro que deseas eliminar el cliente")){
       let url = "http://localhost:8000/api/delete";
       const response = await axios.post(url, {idClientDelete})
       this.getClients()
-      console.log(response)
+      // console.log(response)
       }
     },
     setTotalAmount() {
