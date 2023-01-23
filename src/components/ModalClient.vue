@@ -276,6 +276,8 @@ export default {
       if (this.client.payments == null) {
         this.client.payments = [
           {
+            id: null,
+            clientID: this.idClientSearch,
             transactionID: "",
             amount: "",
             date: "",
@@ -288,7 +290,7 @@ export default {
     addFieldsTransactions() {
       this.client.payments.push({
         id: null,
-        clientID: "",
+        clientID: this.idClientSearch,
         transactionID: "",
         amount: "",
         date: "",
