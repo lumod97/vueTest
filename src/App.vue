@@ -1,9 +1,14 @@
-<script setup>
-import TestComponents from './components/TestComponents.vue'
-</script>
 <template>
+
   <div id="app">
-    <head><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"></head>
-      <TestComponents/>
+    <p>
+    <router-link :to="{name: 'home'}">Home</router-link>
+    <!-- |
+    <router-link :to="{name: 'test_component'}">Test Component</router-link> -->
+    |
+    <router-link :to="{name: 'the_welcome'}">The Welcome</router-link>
+    
+    </p>
+      <router-view></router-view>
   </div>
 </template>
