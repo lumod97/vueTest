@@ -102,6 +102,7 @@
                   </template>
                   <input
                     type="text"
+                    v-mask="'### ### ###'"
                     v-model="client.phone"
                     id="phone"
                     class="form-control"
@@ -175,10 +176,10 @@
             :fields="tableHeaders"
           >
             <template #cell(transactionID)="data">
-              <b-form-input v-model="data.item.transactionID"></b-form-input>
+              <b-form-input v-mask="'pay-####'" v-model="data.item.transactionID"></b-form-input>
             </template>
             <template #cell(amount)="data">
-              <b-form-input v-model="data.item.amount"></b-form-input>
+              <b-form-input v-mask="'###.##'" v-model="data.item.amount"></b-form-input>
             </template>
             <template #cell(date)="data">
               <b-form-input type="date" v-model="data.item.date"></b-form-input>
@@ -202,6 +203,7 @@
 import axios from "axios";
 import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
 import { required } from "vee-validate/dist/rules";
+
 extend("required", {
   ...required,
   message: "This field is required",

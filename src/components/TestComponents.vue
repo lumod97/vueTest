@@ -49,7 +49,7 @@
 
           <b-button
             v-b-tooltip.hover.top="'Eliminar este cliente'"
-            @click="deleteClient(data.item.id)"
+            @click="dClient(data.item.id)"
             variant="danger"
             >Eliminar</b-button
           >
@@ -69,6 +69,7 @@
 <script>
 import axios from "axios";
 import ModalClient from "./ModalClient.vue";
+import ClientActionService from "./scripts/clientActions.service";
 export default {
   components: {
     ModalClient,
@@ -156,11 +157,19 @@ export default {
   },
 
   mounted() {
-    this.getClientsWithoutTransactions();
+    // this.getClientsWithoutTransactions();
     this.getClients();
     //this.setTotalAmount();
   },
   methods: {
+    async getClients() {
+      const data = await ClientActionService.getAllClients()
+      this.readClients = data.data
+    },
+    async dClient(idClient){
+      const data = await ClientActionService.confirmAlert(idClient,'warning','drop')
+      
+    },
     filterOrNot() {
       if (this.filterWithoutTransactions) {
         this.getClientsWithoutTransactions();
@@ -169,17 +178,11 @@ export default {
         this.filterWithoutTransactions = false;
       }
     },
-    async getClients() {
-      let url = "http://localhost:8000/api/search";
-      const response = await axios.get(url);
-      this.readClients = response.data;
-      
-    },
+    
     async getClientsWithoutTransactions() {
-      let url = "http://localhost:8000/api/getWithoutTransactions";
-      const response = await axios.get(url);
-      this.clientWithoutTransactions = response.data.length;
-      this.readClients = response.data;
+      const data = await ClientActionService.getClientsWithoutTransactions()
+      this.clientWithoutTransactions = data.data.length;
+      this.readClients = data.data;
     },
     async addClients() {
       let url = "http://localhost:8000/api/add";
@@ -188,14 +191,36 @@ export default {
       this.getClients();
       // console.log(this.clients)
     },
-    async deleteClient(idClientDelete) {
-      if (confirm("Est[as seguro que deseas eliminar el cliente")) {
-        let url = "http://localhost:8000/api/delete";
-        const response = await axios.post(url, { idClientDelete });
-        this.getClientsWithoutTransactions();
-        this.getClients();
-        // console.log(response)
-      }
+    confirmAlert(idClientDelete,icon,action) {
+      swal("",
+      {
+        title: "Estas seguro?",
+        text: "Estas seguro que deseas eliminar este cliente? Una vez eliminado debes volver a agregarlo.",
+        icon: icon,
+        dangerMode: true,
+        buttons:{
+          cancel:"Cancelar",
+          confirm:{
+            text: "Confirmar",
+            value: action
+          }
+        },
+      }).then((value) => {
+        switch(value){
+          case "drop":
+            this.deleteClient(idClientDelete)
+            swal("Cliente eliminado con exito!",{
+            icon: "success"
+            })
+            break
+          case "add":
+            this.addClients()
+            swal("Cliente agregado con exito!",{
+            icon: "success"
+            })
+            break
+        }
+      });
     },
     setTotalAmount() {
       this.clients.map((el) => {
