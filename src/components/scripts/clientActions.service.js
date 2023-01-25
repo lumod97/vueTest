@@ -35,19 +35,25 @@ class clientActions{
         })
     }
     async getAllClients(){
-        let url = "http://localhost:8000/api/search";   
+        let url = "http://localhost:8000/api/all";   
         return await axios.get(url);
     }
 
     async deleteClient(idClientDelete){
         let url = "http://localhost:8000/api/delete";
         await axios.post(url, { idClientDelete });
-        
+        console.log(this.$route.name)
         // this.getClientsWithoutTransactions();
     }
 
     async getClientsWithoutTransactions() {
-        let url = "http://localhost:8000/api/getWithoutTransactions";
+        let url = "http://localhost:8000/api/without-transactions";
+        return await axios.get(url);
+
+    }
+
+    async getClientsWithTransactions() {
+        let url = "http://localhost:8000/api/with-transactions";
         return await axios.get(url);
 
     }

@@ -1,5 +1,5 @@
 <template>
-  <b-modal scrollable id="modalClient" ref="modal-client" @hidden="$emit('hidden')">
+  <b-modal size="lg" scrollable id="modalClient" ref="modal-client" @hidden="$emit('hidden')">
     <template #modal-header>
       <h3>{{ titleModal }} Cliente</h3>
     </template>
@@ -179,7 +179,9 @@
               <b-form-input v-mask="'pay-####'" v-model="data.item.transactionID"></b-form-input>
             </template>
             <template #cell(amount)="data">
-              <b-form-input v-mask="'###.##'" v-model="data.item.amount"></b-form-input>
+              <money class="form-control" v-model="data.item.amount"></money>
+              {{data.item.amount}}
+              <!-- <b-form-input v-mask="'###.##'" v-model="data.item.amount"></b-form-input> -->
             </template>
             <template #cell(date)="data">
               <b-form-input type="date" v-model="data.item.date"></b-form-input>
@@ -201,6 +203,7 @@
 </template>
 <script>
 import axios from "axios";
+import {Money} from 'v-money'
 import { ValidationProvider, ValidationObserver, extend } from "vee-validate";
 import { required } from "vee-validate/dist/rules";
 
@@ -212,6 +215,7 @@ export default {
   components: {
     ValidationProvider,
     ValidationObserver,
+    Money
   },
   data() {
     return {
@@ -302,7 +306,6 @@ export default {
         : (this.btnAddTransaction = false);
     },
     async addTransactions() {
-      // console.log(this.client.payments)
       let url = "http://localhost:8000/api/addTransactions";
       const response = await axios.post(url, {
         payments: this.client.payments,
@@ -325,7 +328,6 @@ export default {
             let lastIDClient = response.data[0].lastIDClient;
             this.client.payments.forEach((element, index) => {
               this.client.payments[index].clientID = lastIDClient;
-              // console.log(this.client.payments[index].clientID)
             });
             this.$refs["modal-client"].hide();
             this.addTransactions();

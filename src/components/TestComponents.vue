@@ -12,20 +12,16 @@
             variant="primary"
             >AddClient</b-button
           >
-          <b-form-checkbox
-            @change="filterOrNot()"
-            v-model="filterWithoutTransactions"
-            v-b-tooltip.hover.top="'Tienes clientes sin pago'"
-            v-if="clientWithoutTransactions > 0"
-            button-variant="danger"
-            button
-          >
-            {{ this.clientWithoutTransactions }}
-          </b-form-checkbox>
         </b-button-group>
       </b-col>
     </b-row>
-    <b-alert variant="danger" v-show="this.filterWithoutTransactions" class="fixed-bottom" show>Mostrando Clientes sin pagos</b-alert>
+    <b-alert
+      variant="danger"
+      v-show="this.filterWithoutTransactions"
+      class="fixed-bottom"
+      show
+      >Mostrando Clientes sin pagos</b-alert
+    >
     <b-table striped hover :items="readClients" :fields="tableHeaders">
       <template #cell(name)="data">
         {{ data.item.fullname }}
@@ -62,12 +58,18 @@
       :titleModal="titleModal"
       :isUpdate="isUpdate"
       :idClientSearch="idClientSearch"
-      @hidden="(sModal = false), (isUpdate = false), getClientsWithoutTransactions(), getClients()"
+      @hidden="
+        (sModal = false),
+          (isUpdate = false),
+          getClientsWithoutTransactions(),
+          getClients()
+      "
     />
   </div>
 </template>
 <script>
 import axios from "axios";
+import { mapGetters, mapActions } from "vuex";
 import ModalClient from "./ModalClient.vue";
 import ClientActionService from "./scripts/clientActions.service";
 export default {
@@ -155,72 +157,48 @@ export default {
       idClientSearch: "",
     };
   },
-
   mounted() {
     // this.getClientsWithoutTransactions();
-    this.getClients();
+    this.getClients(this.$route.params.status);
     //this.setTotalAmount();
+  },
+  computed: {
+    typeTab() {
+      if (this.$route.name == "test-component-general") {
+        return "general";
+      } else if (this.$route.name == "test-component-sin-datos") {
+        return "no-pays";
+      } else {
+        return "with-pays";
+      }
+    },
   },
   methods: {
     async getClients() {
-      const data = await ClientActionService.getAllClients()
-      this.readClients = data.data
-    },
-    async dClient(idClient){
-      const data = await ClientActionService.confirmAlert(idClient,'warning','drop')
-      
-    },
-    filterOrNot() {
-      if (this.filterWithoutTransactions) {
-        this.getClientsWithoutTransactions();
-      } else {
-        this.getClients();
-        this.filterWithoutTransactions = false;
+      if (this.typeTab == "general") {
+        const data = await ClientActionService.getAllClients();
+        this.readClients = data.data;
+        this.$store.dispatch("A_UPDATE_TABLE_MAIN",this.readClients);
+      } else if (this.typeTab == "no-pays") {
+        const data = await ClientActionService.getClientsWithoutTransactions();
+        this.readClients = data.data;
+      } else if (this.typeTab == "with-pays") {
+        const data = await ClientActionService.getClientsWithTransactions();
+        this.readClients = data.data;
       }
     },
-    
-    async getClientsWithoutTransactions() {
-      const data = await ClientActionService.getClientsWithoutTransactions()
-      this.clientWithoutTransactions = data.data.length;
-      this.readClients = data.data;
+    async dClient(idClient) {
+      const data = await ClientActionService.confirmAlert(
+        idClient,
+        "warning",
+        "drop"
+      );
     },
     async addClients() {
       let url = "http://localhost:8000/api/add";
       const response = await axios.post(url, this.clients);
       this.getClientsWithoutTransactions();
       this.getClients();
-      // console.log(this.clients)
-    },
-    confirmAlert(idClientDelete,icon,action) {
-      swal("",
-      {
-        title: "Estas seguro?",
-        text: "Estas seguro que deseas eliminar este cliente? Una vez eliminado debes volver a agregarlo.",
-        icon: icon,
-        dangerMode: true,
-        buttons:{
-          cancel:"Cancelar",
-          confirm:{
-            text: "Confirmar",
-            value: action
-          }
-        },
-      }).then((value) => {
-        switch(value){
-          case "drop":
-            this.deleteClient(idClientDelete)
-            swal("Cliente eliminado con exito!",{
-            icon: "success"
-            })
-            break
-          case "add":
-            this.addClients()
-            swal("Cliente agregado con exito!",{
-            icon: "success"
-            })
-            break
-        }
-      });
     },
     setTotalAmount() {
       this.clients.map((el) => {

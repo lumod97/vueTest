@@ -1,36 +1,22 @@
 <template>
-  <b-card>
-    <b-tabs content-class="mt-3" fill v-model="tabIndex">
-      <b-tab active>
-        <template #title>
-          <b-nav-item :to="{ name: 'test_component' }" role="presentation"
-            >Todos los Clientes</b-nav-item
-          >
+  <div>
+    <b-tabs content-class="mt-3" fill lazy>
+        <template #tabs-end>
+          <b-nav-item exact-active-class="active" :to="{ name: 'test-component-general' }">Todos los clientes</b-nav-item>
+          <b-nav-item exact-active-class="active"  :to="{ name: 'test-component-sin-datos' }">Clientes sin pagos</b-nav-item>
+          <b-nav-item exact-active-class="active"  :to="{ name: 'test-component-con-datos' }">Clientes con pagos</b-nav-item>
         </template>
-      </b-tab>
-      <b-tab>
-        <template #title>
-          <b-nav-item :to="{ name: 'test_component' }" role="presentation"
-            >Clientes con pagos</b-nav-item
-          >
+        <template #default>
+          <router-view :key="$route.name"></router-view>
         </template>
-      </b-tab>
-      <b-tab>
-        <template #title>
-          <b-nav-item :to="{ name: 'test_component' }" role="presentation"
-            >Clientes sin pagos</b-nav-item
-          >
-        </template>
-      </b-tab>
-      <router-view></router-view>
     </b-tabs>
-  </b-card>
+  
+</div>
 </template>
 <script>
 export default {
   data() {
     return {
-      tabIndex: 1,
     };
   },
 
