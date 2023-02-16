@@ -10,12 +10,16 @@
     "axios": "^1.2.3",
     "bootstrap": "^5.2.3",
     "bootstrap-vue": "^2.23.1",
+    "dotenv": "^8.2.0",
     "es6-promise": "^4.2.8",
+    "feather-icons": "^4.29.0",
+    "pusher-js": "^7.0.3",
     "sweetalert": "^2.1.2",
     "v-mask": "^2.3.0",
     "v-money": "^0.8.1",
     "vee-validate": "^3.4.14",
     "vue": "^2.7.14",
+    "vue-feather-icons": "^5.1.0",
     "vue-router": "^3.6.5",
     "vue2": "^1.0.0",
     "vuex": "^3.6.0"
@@ -23,6 +27,7 @@
   "devDependencies": {
     "@vitejs/plugin-legacy": "^2.0.0",
     "@vitejs/plugin-vue2": "^1.1.2",
+    "sass": "^1.58.1",
     "terser": "^5.14.2",
     "vite": "^3.2.5"
   }

@@ -34,6 +34,17 @@ class clientActions{
         }
         })
     }
+
+    async sendMessage(params){
+        try {
+            const data = await axios.post('/management/checks-bank-account/set-bank-account', params)
+            return data
+        } catch (error) {
+            console.log('Something went wrong on getUserModule:', error)
+            throw error
+        }
+    }
+
     async getAllClients(){
         let url = "http://localhost:8000/api/all";   
         return await axios.get(url);

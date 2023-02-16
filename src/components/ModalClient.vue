@@ -209,7 +209,7 @@ import { required } from "vee-validate/dist/rules";
 
 extend("required", {
   ...required,
-  message: "This field is required",
+  message: "is-invalid",
 });
 export default {
   components: {
